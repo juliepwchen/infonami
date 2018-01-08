@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Geolocation</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+
+  function initMap() {
+
+    var myCenter=new google.maps.LatLng(37.3382,121.8863);
+    var mapProp = {
+      center:myCenter,
+      zoom: 20,
+      panControl:true,
+      zoomControl:true,
+      mapTypeControl:true,
+      scaleControl:true,
+      streetViewControl:true,
+      overviewMapControl:true,
+      rotateControl:true,
+      mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+
+    var map = new google.maps.Map(document.getElementById('map'), mapProp);
+    /* var infoWindow = new google.maps.InfoWindow({map: map}); */
+    var infoWindow = new google.maps.InfoWindow();
+    var bounds = new google.maps.LatLngBounds();
+    var geocoder = new google.maps.Geocoder();
+
+    var markerCurrent =new google.maps.Marker({map: map});
+
+    /* var markerCellTower=new google.maps.Marker({
+      position:myCenter,
+      icon:'images/radiostation.png',
+      map: map
+    }); */
+
+    /* geocoder.geocode( { 'address': "46509 Mission Blvd. Fremont, CA 94539"}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+          map: map,
+          position: results[0].geometry.location,
+          icon:'images/radiostation.png'
+        });
+        var myCity = new google.maps.Circle({
+          center: results[0].geometry.location,
+          radius:2000,
+          strokeColor:"#0000FF",
+          strokeOpacity:0.8,
+          strokeWeight:2,
+          fillColor:"#0000FF",
+          fillOpacity:0.35,
+          map: map
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    }); */
+
+      var locations = [
+          '46509 Mission Blvd. Fremont, CA 94539',
+          '101 W YOUNGER ST, SAN JOSE, CA',
+          '2291 Junction Avenue, San Jose, CA',
+          '935 Piedmont Rd, San Jose, CA',
+          '48989 Milmont DRIVE, FREMONT, CA',
+          '55 West Younger, SAN JOSE, CA',
+          '557 Mariani Lane, San Jose, CA',
+          '115 Dempsey Road, Milpitas, CA',
+          '320 Jackson Street  San Jose, CA',
+          '777 S Main St, Milpitas, CA',
+          ' 327 200 East Santa Clara Street, San Jose, CA',
+          '190 WEST HEDDING STREET, San Jose, CA',
+          ' 219 2265 Sierra Road, San Jose, CA',
+          '535 Brennan Street, San Jose CA',
+          '2450 N First St, San Jose CA',
+          '380 LAURELWOOD RD, Santa Clara, CA',
+          '121 Nortech Parkway, San Jose, CA',
+          '575 BRENNEN ST, San Jose, CA',
+          '48155 Warm Springs Blvd, Fremont, CA',
+          '501 Wooster Avenue, San Jose, CA',
+          '935 RUFF DRIVE, San Jose, CA',
+          '10000 Old Piedmont Rd, San Jose CA'
+      ];
+
+          for (var x = 0; x < locations.length; x++) {
+              geocoder.geocode({'address': locations[x]}, function (results, status) {
+                  if (status == google.maps.GeocoderStatus.OK) {
+                      map.setCenter(results[0].geometry.location);
+                      var marker = new google.maps.Marker({
+                          map: map,
+                          position: results[0].geometry.location,
+                          icon: 'images/radiostation.png'
+                      });
+                      var myCity = new google.maps.Circle({
+                          center: results[0].geometry.location,
+                          radius: 2000,
+                          strokeColor: "#0000FF",
+                          strokeOpacity: 0.8,
+                          strokeWeight: 2,
+                          fillColor: "#0000FF",
+                          fillOpacity: 0.35,
+                          map: map
+                      });
+                  } else {
+                      map.fitBounds(bounds);
+                      /* alert("Geocode was not successful for the following reason: " + status); */
+                  }
+              });
+          }
+
+      /* var nextAddress = 0;
+      var delay = 100;
+      function theNext() {
+          if (nextAddress < locations.length) {
+              setTimeout('geocodeAddress("'+locations[nextAddress]+'",theNext)', delay);
+              nextAddress++;
+          } else {
+              map.fitBounds(bounds);
+          }
+      }
+
+      function geocodeAddress(address, next) {
+          geocoder.geocode({address:address}, function (results,status)
+                  {
+                      if (status == google.maps.GeocoderStatus.OK) {
+                          var p = results[0].geometry.location;
+                          var lat=p.lat();
+                          var lng=p.lng();
+                          createMarker(address,lat,lng);
+
+                      }
+                      else {
+                          if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                              nextAddress--;
+                              delay++;
+                          } else {
+                          }
+                      }
+                      next();
+                  }
+          );
+      }
+
+      function createMarker(add,lat,lng) {
+          var contentString = add;
+          var marker = new google.maps.Marker({
+              position: new google.maps.LatLng(lat,lng),
+              icon:'images/radiostation.png',
+              map: map
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+              infoWindow.setContent(contentString);
+              infoWindow.open(map,marker);
+          });
+
+          bounds.extend(marker.position);
+
+      }
+
+      theNext(); */
+
+     if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        /* markerCurrent.setPosition(pos); */
+          var marker = new google.maps.Marker({
+              map: map,
+              position: pos
+          });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infoWindow.setPosition(pos);
+          infoWindow.setContent('Location found.');
+          infowindow.open(map, marker);
+        });
+
+        map.setCenter(pos);
+
+      }, function() {
+        handleLocationError(true, infoWindow, map.getCenter());
+      });
+    } else {
+      handleLocationError(false, infoWindow, map.getCenter());
+    }
+
+  }
+
+  function placeMarker(location) {
+    var marker = new google.maps.Marker({
+      position: location,
+      map: map
+    });
+    var infowindow = new google.maps.InfoWindow({
+      content: 'Latitude: ' + location.lat() +
+      '<br>Longitude: ' + location.lng()
+    });
+    infowindow.open(map,marker);
+  }
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+            'Error: The Geolocation service failed.' :
+            'Error: Your browser doesn\'t support geolocation.');
+  }
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYTuLfn7DSQfwWHSkaE_mtmcLdMfNjilk&signed_in=true&callback=initMap"
+        async defer>
+</script>
+</body>
+</html>
